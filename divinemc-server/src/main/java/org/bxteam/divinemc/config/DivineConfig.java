@@ -222,6 +222,7 @@ public class DivineConfig {
         // Async mob spawning settings
         public static boolean enableAsyncSpawning = true;
         public static boolean asyncNaturalSpawn = true;
+        public static boolean RCTorPWT = false;
 
         public static void load() {
             parallelWorldTicking();
@@ -230,6 +231,7 @@ public class DivineConfig {
             multithreadedTracker();
             asyncChunkSending();
             asyncMobSpawning();
+            RCTorPWT = enableParallelWorldTicking || enableRegionizedChunkTicking;
         }
 
         private static void parallelWorldTicking() {
