@@ -84,7 +84,7 @@ index d6641018bac731dc4bd512d819020f02e02c0cd2..21547939d76df480d05ff501a66605a0
          return false;
      }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index c9ff57459142abdc45dd2948b075e198ee9044df..f5af5d2001f91d65096202eb0a06c9e527865ea2 100644
+index c9ff57459142abdc45dd2948b075e198ee9044df..5669b32f6e9a2333e86128621d18b1708b440099 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -55,9 +55,9 @@ import org.jspecify.annotations.Nullable;
@@ -234,12 +234,11 @@ index c9ff57459142abdc45dd2948b075e198ee9044df..f5af5d2001f91d65096202eb0a06c9e5
          List<LevelChunk> spawningChunks = this.spawningChunks;
  
          try {
-@@ -650,16 +688,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -650,16 +688,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          } finally {
              spawningChunks.clear();
          }
-+    }
- 
+-
 -        profiler.popPush("tickTickingChunks");
 -        this.iterateTickingChunksFaster(); // Paper - chunk tick iteration optimizations
 -        if (doMobSpawning) {
@@ -248,14 +247,12 @@ index c9ff57459142abdc45dd2948b075e198ee9044df..f5af5d2001f91d65096202eb0a06c9e5
 -        }
 -
 -        profiler.pop();
-+    protected net.minecraft.world.level.entity.EntityTickList getEntityTickList() {
-+       return level.entityTickList;
      }
 +    // DivineMC end - Regionized Chunk Ticking
  
      private void tickSpawningChunk(
          final LevelChunk chunk, final long timeDiff, final List<MobCategory> spawningCategories, final NaturalSpawner.SpawnState spawnCookie
-@@ -888,7 +922,15 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -888,7 +918,15 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              if (serverChunkCache.runDistanceManagerUpdates()) {
                  return true;
              } else {
@@ -273,7 +270,7 @@ index c9ff57459142abdc45dd2948b075e198ee9044df..f5af5d2001f91d65096202eb0a06c9e5
              // Paper end - rewrite chunk system
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf9aea3cb8 100644
+index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..97c2b4768afc6beae08b9f23ceb5cb1eccbcaa93 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -207,7 +207,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -468,7 +465,7 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf
          this.chunkSource.getGeneratorState().ensureStructuresGenerated();
          this.portalForcer = new PortalForcer(this);
          if (this.canHaveWeather()) {
-@@ -912,40 +944,54 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -912,40 +944,49 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  profiler.pop();
              }
  
@@ -492,17 +489,12 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf
 +                if (this.chunkSource instanceof org.bxteam.divinemc.async.rct.RegionizedChunkTicking rct) {
 +                    rct.tickEntitiesParallel();
 +                }
-+                if (this.paperConfig().unsupportedSettings.ticking.blockEntities) { // Paper - option to disable ticking
-+                    profiler.popPush("blockEntities");
-+                    this.tickBlockEntities();
-+                    profiler.pop();
-+                } // Paper - option to disable ticking
-+                this.spigotConfig.currentPrimedTnt = 0; // Spigot
 +            } else {
 +                io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
 +                this.entityTickList
 +                    .forEach(
 +                        entity -> {
++                            // this needs to be maintained in RCT impl also
 +                            entity.activatedPriorityReset = false; // DivineMC - Dynamic Activation of Brain
 +                            if (!entity.isRemoved()) {
 +                                if (!tickRateManager.isEntityFrozen(entity)) {
@@ -533,25 +525,22 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf
                          }
 -                    }
 -                );
--            if (this.paperConfig().unsupportedSettings.ticking.blockEntities) { // Paper - option to disable ticking
++                    );
++            }
+             if (this.paperConfig().unsupportedSettings.ticking.blockEntities) { // Paper - option to disable ticking
 -            profiler.popPush("blockEntities");
 -            this.tickBlockEntities();
 -            profiler.pop();
--            } // Paper - option to disable ticking
--            this.spigotConfig.currentPrimedTnt = 0; // Spigot
-+                    );
-+                if (this.paperConfig().unsupportedSettings.ticking.blockEntities) { // Paper - option to disable ticking
-+                    profiler.popPush("blockEntities");
-+                    this.tickBlockEntities();
-+                    profiler.pop();
-+                } // Paper - option to disable ticking
-+                this.spigotConfig.currentPrimedTnt = 0; // Spigot
-+            }
++                profiler.popPush("blockEntities");
++                this.tickBlockEntities();
++                profiler.pop();
+             } // Paper - option to disable ticking
+             this.spigotConfig.currentPrimedTnt = 0; // Spigot
 +            // DivineMC end - Regionized Chunk Ticking
          }
  
          profiler.push("entityManagement");
-@@ -1947,7 +1993,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1947,7 +1988,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      }
  
      @Override
@@ -560,7 +549,7 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf
          if (this.isUpdatingNavigations) {
              String message = "recursive call to sendBlockUpdated";
              Util.logAndPauseIfInIde("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
-@@ -1961,22 +2007,16 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1961,22 +2002,16 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          if (Shapes.joinIsNotEmpty(oldShape, newShape, BooleanOp.NOT_SAME)) {
              List<PathNavigation> navigationsToUpdate = new ObjectArrayList<>();
  
@@ -592,14 +581,15 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..68f1bead8ac5fd70e3fc45567f703fdf
              try {
                  this.isUpdatingNavigations = true;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 0da107bb6f650ae98f9cde5cca2b4ad40c93e83f..7fe76e3e4dbd60b7ceb2dde78858a6079a04d1b7 100644
+index 0da107bb6f650ae98f9cde5cca2b4ad40c93e83f..7ed81ec2ed25ec8feb211d3d14bf29d4e6ff5a1b 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -458,6 +458,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -458,6 +458,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private boolean compassBar = false; // Purpur - Add compass command
      private boolean ramBar = false; // Purpur - Implement rambar commands
      public boolean hasTickedAtLeastOnceInNewWorld = false; // DivineMC - Parallel world ticking
 +    public final org.bxteam.divinemc.async.rct.RollingLongBuffer avgTickTimeNanos = new org.bxteam.divinemc.async.rct.RollingLongBuffer(100); // DivineMC - Region tick time tracking
++    public int lastRegionChunkSize, lastRegionEntityAmount = 0;
  
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;

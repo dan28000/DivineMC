@@ -46,6 +46,7 @@ public class DivineConfig {
 
     public static final Logger LOGGER = LogManager.getLogger(DivineConfig.class.getSimpleName());
     public static final int CONFIG_VERSION = 8;
+    private static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
 
     private static File configFile;
     public static final YamlFile config = new YamlFile();
@@ -263,9 +264,10 @@ public class DivineConfig {
             regionizedChunkTickingExecutorThreadPriority = getInt(ConfigCategory.ASYNC.key("regionized-chunk-ticking.executor-thread-priority"), regionizedChunkTickingExecutorThreadPriority,
                 "Configures the thread priority of the executor");
 
-            if (regionizedChunkTickingExecutorThreadCount < 1 || regionizedChunkTickingExecutorThreadCount > 10) {
-                LOGGER.warn("Invalid regionized chunk ticking thread count: {}, resetting to default (4)", regionizedChunkTickingExecutorThreadCount);
-                regionizedChunkTickingExecutorThreadCount = 4;
+            if (regionizedChunkTickingExecutorThreadCount < 1 || regionizedChunkTickingExecutorThreadCount > MAX_THREADS) {
+                int max = Math.max(MAX_THREADS / 3, 4);
+                LOGGER.warn("Invalid regionized chunk ticking thread count: {}, resetting to default ({})", regionizedChunkTickingExecutorThreadCount, max);
+                regionizedChunkTickingExecutorThreadCount = max;
             }
         }
 
@@ -275,11 +277,10 @@ public class DivineConfig {
             asyncPathfindingKeepalive = getInt(ConfigCategory.ASYNC.key("pathfinding.keepalive"), asyncPathfindingKeepalive);
             asyncPathfindingQueueSize = getInt(ConfigCategory.ASYNC.key("pathfinding.queue-size"), asyncPathfindingQueueSize);
 
-            final int maxThreads = Runtime.getRuntime().availableProcessors();
             if (asyncPathfindingMaxThreads < 0) {
-                asyncPathfindingMaxThreads = Math.max(maxThreads + asyncPathfindingMaxThreads, 1);
+                asyncPathfindingMaxThreads = Math.max(MAX_THREADS + asyncPathfindingMaxThreads, 1);
             } else if (asyncPathfindingMaxThreads == 0) {
-                asyncPathfindingMaxThreads = Math.max(maxThreads / 4, 1);
+                asyncPathfindingMaxThreads = Math.max(MAX_THREADS / 4, 1);
             }
 
             if (!asyncPathfinding) {
@@ -292,7 +293,7 @@ public class DivineConfig {
 
             try {
                 asyncPathfindingRejectPolicy = PathfindTaskRejectPolicy.valueOf(getString(ConfigCategory.ASYNC.key("pathfinding.reject-policy"),
-                    maxThreads >= 12 && asyncPathfindingQueueSize < 512
+                    MAX_THREADS >= 12 && asyncPathfindingQueueSize < 512
                         ? PathfindTaskRejectPolicy.FLUSH_ALL.toString()
                         : PathfindTaskRejectPolicy.CALLER_RUNS.toString(),
                     "The policy to use when the queue is full and a new task is submitted.",
@@ -318,9 +319,9 @@ public class DivineConfig {
             asyncEntityTrackerQueueSize = getInt(ConfigCategory.ASYNC.key("multithreaded-tracker.queue-size"), asyncEntityTrackerQueueSize);
 
             if (asyncEntityTrackerMaxThreads < 0) {
-                asyncEntityTrackerMaxThreads = Math.max(Runtime.getRuntime().availableProcessors() + asyncEntityTrackerMaxThreads, 1);
+                asyncEntityTrackerMaxThreads = Math.max(MAX_THREADS + asyncEntityTrackerMaxThreads, 1);
             } else if (asyncEntityTrackerMaxThreads == 0) {
-                asyncEntityTrackerMaxThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+                asyncEntityTrackerMaxThreads = Math.max(MAX_THREADS / 4, 1);
             }
 
             if (!multithreadedEnabled) {
@@ -338,9 +339,9 @@ public class DivineConfig {
             asyncChunkSendingMaxThreads = getInt(ConfigCategory.ASYNC.key("chunk-sending.max-threads"), asyncChunkSendingMaxThreads);
 
             if (asyncChunkSendingMaxThreads < 0) {
-                asyncChunkSendingMaxThreads = Math.max(Runtime.getRuntime().availableProcessors() + asyncChunkSendingMaxThreads, 1);
+                asyncChunkSendingMaxThreads = Math.max(MAX_THREADS + asyncChunkSendingMaxThreads, 1);
             } else if (asyncChunkSendingMaxThreads == 0) {
-                asyncChunkSendingMaxThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+                asyncChunkSendingMaxThreads = Math.max(MAX_THREADS / 4, 1);
             }
         }
 
