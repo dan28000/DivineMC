@@ -71,10 +71,10 @@ index 178b1becb538f1fc9a8955c87a8a078d53c77d70..79dfd1cb99fb1f9685463386c8abb17f
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 4a2ec734d245516442c4cdf34f55590b696f4c05..8206e13c87f9e89d40d375fc1a01f3de1fc4eee8 100644
+index 65cc87b87b4151e2024338a6778359dff1b3a4fb..f6b1dca31a7940d134f62133464b96a58129bddb 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2646,6 +2646,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2654,6 +2654,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
          for (TickingBlockEntity ticker : this.blockEntityTickers) {
              BlockPos blockPos = ticker.getPos();
@@ -417,7 +417,7 @@ index dc72cf09b2c738ddaec1d3a41e4f714ce5dcf97d..04a3bd122f06b262052b4e77f53d6878
 +    // DivineMC end - lithium: sleeping_block_entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 77defb27fbd8413ade00072594263b68c10ab2d1..c4bf15379b4f189c1d91f78de9f4fb7654dbb0d2 100644
+index d30811c6ed6d047e552408632a85609958a2fe72..9683e380b3ec380f1c1541e1f1d1f8593ff842d1 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -2283,4 +2283,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

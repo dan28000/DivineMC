@@ -111,7 +111,7 @@ index 2c92b3afc29e0adfe4a388efa62e57fbb621ea0f..cdf7a2909eb8a9702d32c637dff41444
                      List<org.bukkit.block.BlockState> states = new java.util.ArrayList<>(level.capturedBlockStates.values());
                      level.capturedBlockStates.clear();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 78fad45440e676e6c476083a77ac92b7443fe906..cb8068dff87f406d05548e9394857b6bf4d4c0df 100644
+index 78fad45440e676e6c476083a77ac92b7443fe906..44a2b918628fe701574d1bca0ee579d4fdcd0b52 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -341,6 +341,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -191,7 +191,7 @@ index 78fad45440e676e6c476083a77ac92b7443fe906..cb8068dff87f406d05548e9394857b6b
      protected void tickChildren(final BooleanSupplier haveTime) {
          ProfilerFiller profiler = Profiler.get();
          this.getPlayerList().getPlayers().forEach(playerx -> playerx.connection.suspendFlushing());
-@@ -1894,27 +1919,44 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1894,27 +1919,54 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.updateEffectiveRespawnData();
  
          this.isIteratingOverLevels = true; // Paper - Throw exception on world create while being ticked
@@ -243,18 +243,27 @@ index 78fad45440e676e6c476083a77ac92b7443fe906..cb8068dff87f406d05548e9394857b6b
 +                profiler.pop();
 +                level.explosionDensityCache.clear(); // Paper - Optimize explosions
              }
--
++        } catch (java.lang.InterruptedException | java.util.concurrent.RejectedExecutionException e) {
++            throw new RuntimeException(e);
++        }
+ 
 -            profiler.pop();
 -            profiler.pop();
 -            level.explosionDensityCache.clear(); // Paper - Optimize explosions
-+        } catch (java.lang.InterruptedException | java.util.concurrent.RejectedExecutionException e) {
-+            throw new RuntimeException(e);
++        if (org.bxteam.divinemc.config.DivineConfig.AsyncCategory.enableParallelWorldTicking) {
++            for (java.util.concurrent.Future<ServerLevel> task : tasks) {
++                try {
++                    task.get();
++                } catch (java.lang.InterruptedException | java.util.concurrent.ExecutionException e) {
++                    throw new RuntimeException(e);
++                }
++            }
          }
 +        // DivineMC end - Parallel world ticking
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
          profiler.popPush("connection");
-@@ -2005,6 +2047,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2005,6 +2057,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());

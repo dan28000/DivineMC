@@ -434,7 +434,7 @@ index f1fa6c7169635724e202c10adafe7d70e14ac7de..be676525f288705375d1d71d995e4c33
      }
  
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index a43c1b709787f68d78eae7d6f7536bdb8b81ceb0..cbf38a968fe4003c6e68d14ef48b38284ef76ae1 100644
+index f5af5d2001f91d65096202eb0a06c9e527865ea2..c7776439b8a02f459ff9c4fb5c09d01695c72a75 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -454,8 +454,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -448,7 +448,7 @@ index a43c1b709787f68d78eae7d6f7536bdb8b81ceb0..cbf38a968fe4003c6e68d14ef48b3828
      }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1a16652100cea49d77bf1ca5f4b1f3f787bffbef..4a2ec734d245516442c4cdf34f55590b696f4c05 100644
+index e3c1394189b153ac81151b05d26ca4548e690294..65cc87b87b4151e2024338a6778359dff1b3a4fb 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -195,6 +195,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -467,7 +467,7 @@ index 1a16652100cea49d77bf1ca5f4b1f3f787bffbef..4a2ec734d245516442c4cdf34f55590b
          this.entityDataController = new ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.EntityDataController(
              new ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.EntityDataController.EntityRegionFileStorage(
                  new RegionStorageInfo(levelStorage.getLevelId(), dimension, "entities"),
-@@ -1005,8 +1007,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1013,8 +1015,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      @Override
      public boolean shouldTickBlocksAt(final long chunkPos) {
          // Paper start - rewrite chunk system
@@ -477,7 +477,7 @@ index 1a16652100cea49d77bf1ca5f4b1f3f787bffbef..4a2ec734d245516442c4cdf34f55590b
          // Paper end - rewrite chunk system
      }
  
-@@ -1034,10 +1035,9 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1042,10 +1043,9 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      // Paper start - optimise random ticking
      private final ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom simpleRandom = new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed());
  
@@ -489,7 +489,7 @@ index 1a16652100cea49d77bf1ca5f4b1f3f787bffbef..4a2ec734d245516442c4cdf34f55590b
          final ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom simpleRandom = this.simpleRandom;
          final boolean doubleTickFluids = !ca.spottedleaf.moonrise.common.PlatformHooks.get().configFixMC224294();
  
-@@ -2796,16 +2796,13 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2804,16 +2804,13 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
      public boolean isPositionTickingWithEntitiesLoaded(final long key) {
          // Paper start - rewrite chunk system

@@ -10,10 +10,10 @@ As part of: Airplane (https://github.com/TECHNOVE/Airplane)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 8206e13c87f9e89d40d375fc1a01f3de1fc4eee8..889e68f3f82a0dffd24a9d7f44c3def00eae5bfe 100644
+index f6b1dca31a7940d134f62133464b96a58129bddb..f3c825ba03e60913d8458f8b02f085f0d991806f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1111,7 +1111,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1119,7 +1119,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          int minZ = chunkPos.getMinBlockZ();
          ProfilerFiller profiler = Profiler.get();
          profiler.push("thunder");
@@ -23,7 +23,7 @@ index 8206e13c87f9e89d40d375fc1a01f3de1fc4eee8..889e68f3f82a0dffd24a9d7f44c3def0
              if (this.isRainingAt(pos)) {
                  DifficultyInstance difficulty = this.getCurrentDifficultyAt(pos);
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 1076f0ab053f1aa2648d5bf09c3c060a52d3bd75..c77ea83701e53651c6365218f8bc4ba223ba6a67 100644
+index 8ca05fcb8296d1cc7ff186288ae4d770d1b34a4a..41b510ab3b6e7cbf3a518dcd86da22bc3139c72e 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -136,6 +136,18 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
