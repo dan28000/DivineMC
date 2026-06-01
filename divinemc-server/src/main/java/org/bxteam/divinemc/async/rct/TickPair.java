@@ -21,7 +21,7 @@ import net.minecraft.world.level.ChunkPos;
 
 record TickPair(RegionData[] regions, Set<Entity> entities) {
     static TickPair computePlayerRegions(ServerLevel level) {
-        List<ServerPlayer> players = new ArrayList<>(level.players());
+        List<ServerPlayer> players = new ObjectArrayList<>(level.players());
         final int defaultTickDist = level.moonrise$getViewDistanceHolder().getViewDistances().tickViewDistance();
         final int defaultAmountOfChunks = (2 * defaultTickDist + 1) * (2 * defaultTickDist + 1);
         final int playerCount = players.size();
@@ -134,7 +134,18 @@ record TickPair(RegionData[] regions, Set<Entity> entities) {
             }
         }
 
-        regions.sort(Comparator.<RegionData>comparingDouble(r -> r.players().stream().map(p -> p.avgTickTimeNanos.average().orElse(-1)).max(Comparator.naturalOrder()).orElse(-1d)).reversed());
+        regions.sort(Comparator.<RegionData>comparingDouble(r -> {
+            boolean seen = false;
+            Double best = null;
+            for (ServerPlayer p : r.players()) {
+                Double orElse = p.avgTickTimeNanos.average().orElse(-1);
+                if (!seen || orElse.compareTo(best) > 0) {
+                    seen = true;
+                    best = orElse;
+                }
+            }
+            return seen ? best : -1d;
+        }).reversed());
         return new TickPair(regions.toArray(new RegionData[0]), firstTick);
     }
 

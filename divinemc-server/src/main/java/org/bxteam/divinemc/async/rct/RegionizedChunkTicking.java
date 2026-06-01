@@ -34,8 +34,8 @@ public final class RegionizedChunkTicking extends ServerChunkCache {
     private int i = 0;
 
     @SuppressWarnings("unchecked")
-    private CompletableFuture<LongOpenHashSet>[] chunkFutures = new CompletableFuture[64];
-    private CompletableFuture<?>[] entityFutures = new CompletableFuture[64];
+    private CompletableFuture<LongOpenHashSet>[] chunkFutures = new CompletableFuture[32];
+    private CompletableFuture<?>[] entityFutures = new CompletableFuture[32];
     private final LongOpenHashSet tickedChunkKeys = new LongOpenHashSet(8192);
 
     public RegionizedChunkTicking(
@@ -68,6 +68,7 @@ public final class RegionizedChunkTicking extends ServerChunkCache {
         if (chunkFutures.length < regions.length) {
             chunkFutures = new CompletableFuture[Math.max(chunkFutures.length * 2, regions.length)];
         }
+
         int count = 0;
         for (RegionData region : regions) {
             if (region == null || region.isEmpty()) {
