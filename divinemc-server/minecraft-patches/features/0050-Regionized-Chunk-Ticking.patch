@@ -581,7 +581,7 @@ index e591ba2d21c3f8dcad10b12aad1613a30c3ce928..97c2b4768afc6beae08b9f23ceb5cb1e
              try {
                  this.isUpdatingNavigations = true;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 0da107bb6f650ae98f9cde5cca2b4ad40c93e83f..7ed81ec2ed25ec8feb211d3d14bf29d4e6ff5a1b 100644
+index 0da107bb6f650ae98f9cde5cca2b4ad40c93e83f..b7c83bcd565aae95d02cfeccdd2d1d5c133c3d7b 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -458,6 +458,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -589,7 +589,7 @@ index 0da107bb6f650ae98f9cde5cca2b4ad40c93e83f..7ed81ec2ed25ec8feb211d3d14bf29d4
      private boolean ramBar = false; // Purpur - Implement rambar commands
      public boolean hasTickedAtLeastOnceInNewWorld = false; // DivineMC - Parallel world ticking
 +    public final org.bxteam.divinemc.async.rct.RollingLongBuffer avgTickTimeNanos = new org.bxteam.divinemc.async.rct.RollingLongBuffer(100); // DivineMC - Region tick time tracking
-+    public int lastRegionChunkSize, lastRegionEntityAmount = 0;
++    public int lastRegionChunkSize, lastRegionEntityAmount, regionHash = 0;
  
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
