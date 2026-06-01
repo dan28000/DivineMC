@@ -32,7 +32,7 @@ public final class TickTimes extends DivineSubCommandPermission {
     private static final Component SLASH = text("/");
     private static final ClickCallback.Options options = ClickCallback.Options.builder().uses(-1).lifetime(Duration.ofMinutes(1)).build();
 
-    private record RegionStatsKey(int chunkSize, int entityAmount) {}
+    private record RegionStatsKey(int chunkSize, int entityAmount, int regionHash) {}
 
     public TickTimes() {
         super(PERM, PermissionDefault.OP);
@@ -86,7 +86,7 @@ public final class TickTimes extends DivineSubCommandPermission {
 
             Map<RegionStatsKey, List<ServerPlayer>> playersByRegionStats = new LinkedHashMap<>();
             for (ServerPlayer player : players) {
-                RegionStatsKey key = new RegionStatsKey(player.lastRegionChunkSize, player.lastRegionEntityAmount);
+                RegionStatsKey key = new RegionStatsKey(player.lastRegionChunkSize, player.lastRegionEntityAmount, player.regionHash);
                 playersByRegionStats.computeIfAbsent(key, ignored -> new ArrayList<>()).add(player);
             }
 
